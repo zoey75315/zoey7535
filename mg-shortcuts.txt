@@ -7,3 +7,13 @@ C-e line end
 M-< file start
 M-> file end
 
+C-x C-f open
+C-x C-s save
+C-x C-c save quit
+
+C-x b buffer next
+C-x C-b buffer list 
+C-x k buffer quit
+
+C-x 0 window close
+C-x o window switch
