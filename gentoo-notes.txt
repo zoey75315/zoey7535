@@ -1,0 +1,51 @@
+gentoo notes
+
+tar xpvf stage3-*.tar.xz --xattrs-include='*.*' --numeric-owner -C /mnt/gentoo
+nano /mnt/gentoo/etc/portage/make.conf
+
+COMMON_FLAGS="-march=skylake -O2 -pipe"
+CFLAGS="${COMMON_FLAGS}"
+CXXFLAGS="${COMMON_FLAGS}"
+FCFLAGS="${COMMON_FLAGS}"
+FFLAGS="${COMMON_FLAGS}"
+LC_MESSAGES=C.utf8
+MAKEOPTS="-j4 -l5"
+USE="-systemd -cdr -dvd -dvdr -cups"
+VIDEO_CARDS="intel"
+
+cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
+arch-chroot /mnt/gentoo
+mkdir /efi
+mount /dev/sda1 /efi
+emerge-webrsync 
+emerge --ask --verbose --oneshot app-portage/mirrorselect
+mirrorselect -i -o >> /etc/portage/make.conf
+emerge --ask --oneshot app-portage/cpuid2cpuflags
+echo "*/* $(cpuid2cpuflags)" > /etc/portage/package.use/00cpu-flags
+ln -sf ../usr/share/zoneinfo/Pacific/Auckland /etc/localtime
+env-update && source /etc/profile && export PS1="(chroot) ${PS1}"
+echo 'GRUB_PLATFORMS="efi-64"' >> /etc/portage/make.conf
+echo 'sys-kernel/installkernel dracut grub' >> /etc/portage/package.use/installkernel
+emerge --ask --autounmask linux-firmware intel-microcode gentoo-kernel-bin
+nano /etc/fstab
+
+/dev/sda1   /efi        vfat    umask=0077     0 2
+/dev/sda2   none         swap    sw                   0 0
+/dev/sda3   /            xfs    defaults,noatime              0 1
+
+echo gentoo-thinkpad > /etc/hostname
+passwd
+emerge --ask --autounmask app-admin/sysklogd sys-apps/mlocate app-shells/bash-completion sys-fs/xfsprogs app-admin/sudo sys-process/cronie net-misc/chrony net-misc/networkmanager
+
+rc-update add sysklogd default
+rc-update add cronied default
+rc-update add chronyd default
+rc-update add networkmanager default
+
+useradd zoey
+passwd zoey
+usermod -aG wheel,audio,video,plugdev zoey
+nano /etc/sudoers
+
+grub-install --efi-directory=/efi
+grub-mkconfig -o /boot/grub/grub.cfg
