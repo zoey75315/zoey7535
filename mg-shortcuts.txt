@@ -1,0 +1,9 @@
+C-f	move right
+C-b	move left
+C-p move up
+C-n move down
+C-a line start
+C-e line end
+M-< file start
+M-> file end
+
