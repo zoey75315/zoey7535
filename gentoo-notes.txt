@@ -13,7 +13,7 @@ LC_MESSAGES=C.utf8
 MAKEOPTS="-j4 -l5"
 USE="-systemd -cdr -dvd -dvdr -cups"
 VIDEO_CARDS="intel"
-FEATURES="binpkg-request-signature"
+# FEATURES="binpkg-request-signature"
 file end
 cp --dereference /etc/resolv.conf /mnt/gentoo/etc/
 arch-chroot /mnt/gentoo
